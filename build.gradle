@@ -1,34 +1,79 @@
 buildscript {
-	ext {
-		springBootVersion = '2.0.0.RELEASE'
-	}
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
+    ext {
+        springBootVersion = '2.0.0.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+plugins {
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.9"
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'idea'
 
 group = 'ru.frtk'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
-repositories {
-	mavenCentral()
+ext {
+    queryDslVersion = '4.1.4'
 }
 
+querydsl {
+    jpa = true
+}
+
+idea {
+    module {
+        sourceDirs += file('generated/')
+    }
+}
+
+repositories {
+    mavenCentral()
+}
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-cache')
-	compile('org.springframework.boot:spring-boot-starter-security')
-	runtime('com.h2database:h2')
-	runtime('mysql:mysql-connector-java')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
-	testCompile('org.springframework.security:spring-security-test')
+    //Spring
+    compile('org.springframework.boot:spring-boot-starter') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+    compile('org.springframework.boot:spring-boot-starter-cache')
+    compile('org.springframework.boot:spring-boot-starter-security')
+    compile('org.springframework.boot:spring-boot-starter-jersey')
+    compile('org.springframework.boot:spring-boot-starter-data-jpa')
+    compile('org.springframework.boot:spring-boot-starter-log4j2')
+
+    // Vk
+    compile('com.petersamokhin:vk-bot-java-sdk:0.1.3')
+    compile('com.vk.api:sdk:0.5.12')
+
+    // QueryDSL
+    compile "com.querydsl:querydsl-jpa:$queryDslVersion"
+    compile "com.querydsl:querydsl-apt:$queryDslVersion"
+    //compile "com.querydsl:querydsl-apt:$queryDslVersion:jpa"
+
+    runtime('com.h2database:h2')
+    runtime('mysql:mysql-connector-java')
+
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('org.springframework.security:spring-security-test')
+}
+
+configurations.all {
+    exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    exclude group: 'ch.qos.logback', module: 'logback-classic'
+    exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
+    //exclude group: 'org.slf4j',module: 'slf4j-api'
+    //exclude group: 'log4j', module: 'log4j'
 }
