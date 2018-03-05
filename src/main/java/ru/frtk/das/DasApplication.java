@@ -9,6 +9,4 @@ public class DasApplication {
     public static void main(String[] args) {
         SpringApplication.run(DasApplication.class, args);
     }
-
-
 }
